@@ -28,13 +28,13 @@ class MyLinkedList {
 	 * invalid, return -1. */
 	int get(int index) {
 		Node *now = root;
-		for (int i = 0; i <= index; i++) {
-			if (now == NULL) {
-				return -1;
-			} else if (i == index) {
+		int i = 0;
+		while (now != NULL) {
+			if (i == index) {
 				return now->val;
 			}
 			now = now->next;
+			i++;
 		}
 		return -1;
 	}
@@ -75,17 +75,19 @@ class MyLinkedList {
 		}
 		Node *now = root;
 		int length = 0;
-		while (now != NULL){
+		bool flag = false;
+		while (now != NULL) {
 			if (length == index) {
 				Node *temp = now->prev;
 				now->prev = new Node(val, now, temp);
 				temp->next = now->prev;
+				flag=true;
 				break;
 			}
 			now = now->next;
 			length++;
-		} 
-		if (length == index) {
+		}
+		if (length == index && flag==false) {
 			addAtTail(val);
 		}
 	}
@@ -94,15 +96,19 @@ class MyLinkedList {
 	void deleteAtIndex(int index) {
 		Node *now = root;
 		int length = 0;
-		while(now!=NULL) {
+		while (now != NULL) {
 			if (length == index) {
 				if (now->next != NULL) { // not tail node
 					now->next->prev = now->prev;
-				} else if (now->prev != NULL) { // not head node
-					root = now->next;
+				}
+				if (now->prev != NULL) { // not head node
 					now->prev->next = now->next;
 				}
+				if (now->prev == NULL) {
+					root = now->next;
+				}
 				delete now;
+				break;
 			}
 			now = now->next;
 			length++;
@@ -134,16 +140,20 @@ int main(int argc, char const *argv[]) {
 	linkedList.addAtHead(7);	 // 7
 	linkedList.addAtHead(2);	 // 2 7
 	linkedList.addAtTail(1);	 // 2 7 1
-	linkedList.addAtIndex(3, 0); // 2 7 1
+	linkedList.addAtIndex(3, 0); // 2 7 1 0
 	linkedList.display();
-	linkedList.deleteAtIndex(2); // 2 7
-	linkedList.addAtHead(6);	 // 6 2 7
-	linkedList.addAtTail(4);	 // 6 2 7 4
+	linkedList.deleteAtIndex(2); // 2 7 0
+	linkedList.addAtHead(6);	 // 6 2 7 0
+	linkedList.addAtTail(4);	 // 6 2 7 0 4
 	linkedList.display();
 	cout << linkedList.get(4) << endl;
-	linkedList.addAtHead(4);
-	linkedList.addAtIndex(5, 0); //链表变为1-> 2-> 3
-	linkedList.addAtHead(6);
+	linkedList.addAtHead(4);	// 4 6 2 7 0 4
+	linkedList.display();
+	linkedList.addAtIndex(5, 0);	// 4 6 2 7 0 0 4
+	cout << __LINE__ << ":";
+	linkedList.display();
+	linkedList.addAtHead(6);	// 6 4 6 2 7 0 4 0
+	linkedList.display();
 
 	return 0;
 }
